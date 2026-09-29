@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111823">
+  <meta name="description" content="L1 Linux: a small source-based distro with s6, LPM, 32-bit and 64-bit builds, BIOS and UEFI boot, and a ~70 MB ISO.">
+  <title>L1 Linux — less between you and the machine</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="topline"><span>L1 LINUX / BUILT FROM SOURCE</span><span><i class="live-dot"></i> IN DEVELOPMENT</span></div>
+  <header class="site-header" id="top">
+    <a class="brand" href="#top" aria-label="L1 Linux home"><span class="brand-symbol">L<span>1</span></span><span class="brand-name">L1<br>LINUX</span></a>
+    <nav aria-label="Main navigation"><a href="#approach">Approach</a><a href="#system">System</a><a href="#specs">Specs</a><a href="#rt-hdk">RT_HDK</a></nav>
+    <a class="header-link" href="https://t.me/+3dqUpvBmXSI5ZDJl" target="_blank" rel="noopener noreferrer">Telegram group <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> A SMALL SYSTEM FOR A WIDER ORBIT <span class="serial">/ 001</span></div>
+        <h1 id="hero-title">Less between<br>you and <em>the<br>machine.</em></h1>
+        <p class="hero-intro">A compact Linux system with s6 at its heart, LPM for source packages, and no GNU components in the target image.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#specs">View requirements <span aria-hidden="true">↗</span></a><a class="text-link" href="#system">Explore the system <span aria-hidden="true">↗</span></a></div>
+        <div class="hero-footnote"><span>01 / THE SYSTEM</span><span>SCROLL TO EXPLORE ↓</span></div>
+      </div>
+      <div class="hero-visual" role="group" aria-label="L1 Linux system map">
+        <div class="visual-grid" aria-hidden="true"></div>
+        <div class="visual-head"><span>FIG. 01 — SYSTEM MAP</span><span>ASTRA / ARTEMIS</span></div>
+        <div class="map-stage">
+          <svg class="map-connections" viewBox="0 0 1000 640" preserveAspectRatio="none" aria-hidden="true">
+            <path data-connection="s6" d="M500 320 H375 V147 H190"/>
+            <path data-connection="lpm" d="M500 320 H615 V134 H790"/>
+            <path data-connection="gnu" d="M500 320 H160"/>
+            <path data-connection="arch" d="M500 320 H820"/>
+            <path data-connection="boot" d="M500 320 H390 V506 H230"/>
+            <path data-connection="small" d="M500 320 H605 V512 H770"/>
+          </svg>
+          <div class="map-core"><span>CORE / 00</span><strong>L<span>1</span></strong><small>LINUX</small></div>
+          <div class="map-cards">
+            <a class="map-node map-s6" data-map-node="s6" href="#system"><span>01 / INIT</span><strong>s6</strong><small>SERVICE SUPERVISION</small></a>
+            <a class="map-node map-lpm" data-map-node="lpm" href="#lpm"><span>02 / PACKAGES</span><strong>LPM</strong><small>BUILT FROM SOURCE</small></a>
+            <a class="map-node map-gnu" data-map-node="gnu" href="#system"><span>03 / USERLAND</span><strong>NO GNU</strong><small>IN THE TARGET IMAGE</small></a>
+            <a class="map-node map-arch" data-map-node="arch" href="#specs"><span>04 / CPU</span><strong>32 / 64</strong><small>i686 + x86_64</small></a>
+            <a class="map-node map-boot" data-map-node="boot" href="#specs"><span>05 / BOOT</span><strong>BIOS + UEFI</strong><small>OLD + NEW MACHINES</small></a>
+            <a class="map-node map-small" data-map-node="small" href="#specs"><span>06 / SIZE</span><strong>~70 MB</strong><small>ISO · 256 MiB RAM</small></a>
+          </div>
+        </div>
+        <div class="map-readout"><span id="map-readout-label">MAP NOTE / 00</span><strong id="map-readout-text">Choose a branch to read its role in L1.</strong><span class="readout-count">001—006</span></div>
+      </div>
+    </section>
+
+    <section class="spec-strip" aria-label="L1 Linux at a glance"><div class="strip-item"><strong>~70<span>MB</span></strong><small>ISO FOOTPRINT</small></div><div class="strip-item"><strong>s6</strong><small>INIT SYSTEM</small></div><div class="strip-item"><strong>LPM</strong><small>SOURCE PACKAGES</small></div><div class="strip-item"><strong>0</strong><small>GNU RUNTIME COMPONENTS</small></div></section>
+
+    <section class="manifesto section-pad" id="approach"><div class="section-kicker"><span>/ 01</span> THE APPROACH</div><div class="manifesto-grid"><h2>A system with<br><em>nothing to hide.</em></h2><div><p>Every layer earns its place. L1 starts with a compact base and leaves the rest in your hands.</p><p>No heavy default desktop. A clear starting point for the machine you want to build.</p><a class="inline-link" href="#system">Look under the hood ↗</a></div></div><div class="rule-mark"><span></span> KEEP THE ESSENTIALS. QUESTION THE REST. <span></span></div></section>
+
+    <section class="system section-pad" id="system">
+      <div class="section-kicker"><span>/ 02</span> UNDER THE HOOD</div>
+      <div class="section-head"><h2>Small choices.<br><em>Big difference.</em></h2><p>The boot path is short enough to explain. Each piece has a clear job.</p></div>
+      <div class="feature-list">
+        <article class="feature"><span>01</span><div><h3>s6 / service supervision</h3><p>s6 handles init and keeps services under supervision. Services run as visible, separate processes instead of disappearing into a single opaque startup script.</p></div><b aria-hidden="true">↗</b></article>
+        <article class="feature"><span>02</span><div><h3>LPM / packages from source</h3><p>Readable .l1pm recipes name the source, dependencies, and build steps. LPM can plan the work before building and installing a package.</p></div><b aria-hidden="true">↗</b></article>
+        <article class="feature"><span>03</span><div><h3>musl + dash / a compact base</h3><p>musl provides the C library and dash provides the shell. They help keep the target system small and direct.</p></div><b aria-hidden="true">↗</b></article>
+        <article class="feature"><span>04</span><div><h3>No GNU runtime in the image</h3><p>GNU tools may be used to build L1 on the host; the target image excludes GNU runtime components.</p></div><b aria-hidden="true">↗</b></article>
+      </div>
+      <div class="boot-flow"><div class="boot-flow-head"><span>BOOT PATH / FROM POWER TO PROMPT</span><span>READ LEFT TO RIGHT →</span></div><ol><li><span>01</span><strong>BIOS or UEFI</strong><small>Firmware</small></li><li><span>02</span><strong>Limine</strong><small>Bootloader</small></li><li><span>03</span><strong>Linux + musl</strong><small>Kernel + libc</small></li><li><span>04</span><strong>s6</strong><small>Init + services</small></li><li><span>05</span><strong>Shell</strong><small>Your system</small></li></ol></div>
+    </section>
+
+    <section class="requirements section-pad" id="specs"><div class="section-kicker"><span>/ 03</span> HARDWARE &amp; BOOT</div><div class="requirements-heading"><h2>What L1<br><em>asks of a machine.</em></h2><p>Two architectures, legacy and modern firmware, and a small memory target.</p></div><div class="requirements-grid"><div class="requirement"><span class="req-index">A / ARCHITECTURE</span><strong>x86_64 <small>64-bit</small><br>i686 <small>32-bit</small></strong><p>Separate 64-bit and 32-bit builds.</p></div><div class="requirement"><span class="req-index">B / FIRMWARE</span><strong>BIOS <small>non-UEFI</small><br>UEFI</strong><p>Boot paths for legacy and UEFI systems.</p></div><div class="requirement"><span class="req-index">C / MEMORY</span><strong>256 <small>MiB RAM</small></strong><p>Lowest tested boot memory. Compiler workloads need more.</p></div><div class="requirement"><span class="req-index">D / STORAGE TARGETS</span><strong>300 <small>MB standard</small><br>8 <small>GB netinstall</small></strong><p>Planned storage profiles for the two editions.</p></div></div><p class="spec-note">Current whole-disk installer needs at least 512 MiB of disk space. The 300 MB standard profile is a target for a future release.</p>
+      <div class="profiles-heading"><span>EDITION TARGETS</span><p>Both profiles share the same small-system direction. Their storage figures are release targets.</p></div>
+      <div class="profile-grid"><article class="profile"><div class="profile-top"><span>PROFILE 01</span><span>PLANNED</span></div><h3>Standard</h3><p>A compact base you can install and shape yourself.</p><ul><li><b>300 MB</b><span>storage target</span></li><li><b>s6 + LPM</b><span>core tools</span></li><li><b>~70 MB</b><span>ISO class</span></li></ul></article><article class="profile"><div class="profile-top"><span>PROFILE 02</span><span>PLANNED</span></div><h3>Netinstall</h3><p>A network-assisted path with space for a larger source-based system.</p><ul><li><b>8 GB</b><span>storage target</span></li><li><b>Network</b><span>package delivery goal</span></li><li><b>Toolchain</b><span>room for source builds</span></li></ul></article></div>
+    </section>
+
+    <section class="hdk section-pad" id="rt-hdk">
+      <div class="section-kicker"><span>/ 04</span> ON THE ROADMAP</div>
+      <div class="hdk-grid"><div><span class="planned-tag">PLANNED / RT_HDK</span><h2>Drivers for the<br><em>hardware at hand.</em></h2></div><div class="hdk-copy"><p>RT_HDK is the planned real-time driver and kernel compilation system. Its aim is to match a machine's hardware with driver source and build the needed support during setup.</p><p class="hdk-caveat">The current boot image reports unsupported hardware. It does not compile missing drivers yet.</p></div></div>
+      <div class="hdk-steps" aria-label="Planned RT_HDK workflow"><div><span>01 / DETECT</span><strong>Read the hardware</strong><p>Identify devices that need a driver.</p></div><div><span>02 / BUILD</span><strong>Compile the match</strong><p>Use a prepared kernel and toolchain workspace.</p></div><div><span>03 / CHECK</span><strong>Verify the result</strong><p>Test the built support before it is used.</p></div></div>
+    </section>
+
+    <section class="package-section section-pad" id="lpm">
+      <div class="section-kicker"><span>/ 05</span> LPM / THE PACKAGE MANAGER</div>
+      <div class="package-layout"><div><span class="mini-tag">BUILD IT. KNOW IT.</span><h2>Packages,<br><em>without the fog.</em></h2><p>LPM uses readable recipes for sources, dependencies, and build steps, so the path from source to installed package stays visible.</p></div><div class="terminal" role="region" aria-label="Illustrative LPM command"><div class="terminal-bar"><span>● ○ ○</span><span>lpm / example session</span><span>⌘</span></div><pre><span class="prompt">l1 ~ $</span> lpm plan LLVM.l1pm --repo recipes
+
+<span class="muted">[lpm]</span> reading recipe: LLVM.l1pm
+<span class="muted">[lpm]</span> resolving dependencies
+<span class="tree">├─</span> CMake
+<span class="tree">├─</span> Ninja
+<span class="tree">└─</span> LLVM
+
+<span class="prompt">✓</span> build plan ready<span class="cursor-block" aria-hidden="true"></span></pre><div class="terminal-note">ILLUSTRATIVE LPM SESSION <span>↗</span></div></div></div>
+      <div class="lpm-flow"><div><span>01</span><strong>Read</strong><p>Load a .l1pm recipe and its dependencies.</p></div><div><span>02</span><strong>Verify</strong><p>Check source hashes or a pinned commit.</p></div><div><span>03</span><strong>Build</strong><p>Run the recipe steps in a prepared work area.</p></div><div><span>04</span><strong>Record</strong><p>Install files and track the package.</p></div></div>
+    </section>
+
+    <section class="status-section section-pad" id="status"><div class="section-kicker"><span>/ 06</span> MISSION LOG</div><div class="status-grid"><div><span class="status-pill"><i class="live-dot"></i> ACTIVE DEVELOPMENT</span><h2>Built in the open.<br><em>Still taking shape.</em></h2></div><div><p>The boot core, s6 setup, and LPM are the foundation. RT_HDK and the storage profiles above are release goals. Public download details will appear when the image is ready.</p><a class="button button-outline" href="https://t.me/+3dqUpvBmXSI5ZDJl" target="_blank" rel="noopener noreferrer">Join the Telegram group <span aria-hidden="true">↗</span></a></div></div><div class="status-facts"><div><span>TESTED IN DEVELOPMENT</span><p>x86_64 UEFI installation and i686 BIOS installation have booted in QEMU with 256 MiB RAM and a 512 MiB disk.</p></div><div><span>STILL TO BUILD</span><p>Public release images, the 300 MB standard profile, the 8 GB netinstall profile, and RT_HDK driver compilation.</p></div></div></section>
+  </main>
+  <footer><span>L1 / LINUX</span><span>LESS SYSTEM. MORE SPACE.</span><a href="#top">BACK TO TOP ↑</a></footer>
+</body>
+</html>
