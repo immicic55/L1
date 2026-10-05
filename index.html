@@ -7,8 +7,8 @@
   <meta name="description" content="L1 Linux: a small source-based distro with s6, LPM, 32-bit and 64-bit builds, BIOS and UEFI boot, and a ~70 MB ISO.">
   <title>L1 Linux — less between you and the machine</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261005-interactive">
+  <script src="script.js?v=20261005-interactive" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -89,6 +89,9 @@
         </div>
         <div class="boot-narrative">
           <div class="boot-narrative-head"><span>FROM POWER TO PROMPT</span><span>SCROLL TO ASSEMBLE ↓</span></div>
+          <div class="inspect-controls" role="group" aria-label="Inspect a boot layer">
+            <button type="button" data-inspect="0" aria-pressed="false">Firmware</button><button type="button" data-inspect="1" aria-pressed="false">Bootloader</button><button type="button" data-inspect="2" aria-pressed="false">Kernel</button><button type="button" data-inspect="3" aria-pressed="false">s6</button><button type="button" data-inspect="4" aria-pressed="false">Shell</button><button type="button" data-inspect="auto" aria-pressed="true">Automatic view</button>
+          </div><p class="interaction-note" id="inspect-note" aria-live="polite">Scroll through the boot path, or select a layer to inspect it.</p>
           <h3 id="boot-title">A clear path<br>through the machine.</h3>
           <ol class="boot-story">
             <li><span class="boot-step-index">01 / FIRMWARE</span><h4>BIOS or UEFI</h4><p>The boot path starts on older BIOS machines and newer UEFI systems.</p></li>
@@ -107,9 +110,22 @@
       </div>
     </section>
 
-    <section class="requirements section-pad" id="specs"><div class="section-kicker"><span>/ 03</span> HARDWARE &amp; BOOT</div><div class="requirements-heading"><h2>What L1<br><em>asks of a machine.</em></h2><p>Two architectures, legacy and modern firmware, and a small memory target.</p></div><div class="requirements-grid"><div class="requirement"><span class="req-index">A / ARCHITECTURE</span><strong>x86_64 <small>64-bit</small><br>i686 <small>32-bit</small></strong><p>Separate 64-bit and 32-bit builds.</p></div><div class="requirement"><span class="req-index">B / FIRMWARE</span><strong>BIOS <small>non-UEFI</small><br>UEFI</strong><p>Boot paths for legacy and UEFI systems.</p></div><div class="requirement"><span class="req-index">C / MEMORY</span><strong>256 <small>MiB RAM</small></strong><p>Lowest tested boot memory. Compiler workloads need more.</p></div><div class="requirement"><span class="req-index">D / STORAGE TARGETS</span><strong>300 <small>MB standard</small><br>8 <small>GB netinstall</small></strong><p>Planned storage profiles for the two editions.</p></div></div><p class="spec-note">Current whole-disk installer needs at least 512 MiB of disk space. The 300 MB standard profile is a target for a future release.</p>
+    <section class="requirements section-pad" id="specs"><div class="section-kicker"><span>/ 03</span> HARDWARE &amp; BOOT</div><div class="requirements-heading"><h2>What L1<br><em>asks of a machine.</em></h2><p>Two architectures, legacy and modern firmware, and a small memory target.</p></div><div class="requirements-grid"><div class="requirement depth-panel"><span class="req-index">A / ARCHITECTURE</span><strong>x86_64 <small>64-bit</small><br>i686 <small>32-bit</small></strong><p>Separate 64-bit and 32-bit builds.</p></div><div class="requirement depth-panel"><span class="req-index">B / FIRMWARE</span><strong>BIOS <small>non-UEFI</small><br>UEFI</strong><p>Boot paths for legacy and UEFI systems.</p></div><div class="requirement depth-panel"><span class="req-index">C / MEMORY</span><strong>256 <small>MiB RAM</small></strong><p>Lowest tested boot memory. Compiler workloads need more.</p></div><div class="requirement depth-panel"><span class="req-index">D / STORAGE TARGETS</span><strong>300 <small>MB standard</small><br>8 <small>GB netinstall</small></strong><p>Planned storage profiles for the two editions.</p></div></div><p class="spec-note">Current whole-disk installer needs at least 512 MiB of disk space. The 300 MB standard profile is a target for a future release.</p>
+      <div class="hardware-checker">
+        <div class="tool-heading"><span>TRY YOUR CONFIGURATION</span><h3>How small can you go?</h3><p>Compare your machine with the published development figures. This checks capacity only; it cannot detect devices or confirm driver support.</p></div>
+        <form id="hardware-checker">
+          <div class="checker-fields">
+            <label>Processor<select name="architecture"><option value="x86_64">x86_64 / 64 bit</option><option value="i686">i686 / 32 bit</option><option value="other">ARM or another architecture</option></select></label>
+            <label>Memory<select name="memory"><option value="128">128 MiB</option><option value="256" selected>256 MiB</option><option value="512">512 MiB</option><option value="2048">2 GiB or more</option></select></label>
+            <label>Disk space<select name="storage"><option value="300">300 MB</option><option value="512" selected>512 MiB</option><option value="8000">8 GB</option><option value="16000">16 GB or more</option></select></label>
+            <label>Compare against<select name="edition"><option value="current">Current development installer</option><option value="standard">Standard / planned</option><option value="netinstall">Netinstall / planned</option></select></label>
+          </div>
+          <button class="button button-primary" type="submit">Check configuration <span aria-hidden="true">↗</span></button>
+          <div class="checker-result" id="hardware-result" role="status"><strong>Choose a configuration.</strong><p>The current development installer needs at least 512 MiB of disk space. Planned edition targets differ.</p></div>
+        </form>
+      </div>
       <div class="profiles-heading"><span>EDITION TARGETS</span><p>Both profiles share the same small-system direction. Their storage figures are release targets.</p></div>
-      <div class="profile-grid"><article class="profile"><div class="profile-top"><span>PROFILE 01</span><span>PLANNED</span></div><h3>Standard</h3><p>A compact base you can install and shape yourself.</p><ul><li><b>300 MB</b><span>storage target</span></li><li><b>s6 + LPM</b><span>core tools</span></li><li><b>~70 MB</b><span>ISO class</span></li></ul></article><article class="profile"><div class="profile-top"><span>PROFILE 02</span><span>PLANNED</span></div><h3>Netinstall</h3><p>A network-assisted path with space for a larger source-based system.</p><ul><li><b>8 GB</b><span>storage target</span></li><li><b>Network</b><span>package delivery goal</span></li><li><b>Toolchain</b><span>room for source builds</span></li></ul></article></div>
+      <div class="profile-grid"><article class="profile depth-panel"><div class="profile-top"><span>PROFILE 01</span><span>PLANNED</span></div><h3>Standard</h3><p>A compact base you can install and shape yourself.</p><ul><li><b>300 MB</b><span>storage target</span></li><li><b>s6 + LPM</b><span>core tools</span></li><li><b>~70 MB</b><span>ISO class</span></li></ul></article><article class="profile depth-panel"><div class="profile-top"><span>PROFILE 02</span><span>PLANNED</span></div><h3>Netinstall</h3><p>A network-assisted path with space for a larger source-based system.</p><ul><li><b>8 GB</b><span>storage target</span></li><li><b>Network</b><span>package delivery goal</span></li><li><b>Toolchain</b><span>room for source builds</span></li></ul></article></div>
     </section>
 
     <section class="hdk section-pad" id="rt-hdk">
@@ -122,7 +138,7 @@
       <div class="section-kicker"><span>/ 05</span> LPM / THE PACKAGE MANAGER</div>
       <div class="package-layout">
         <div class="package-copy"><h2>Packages,<br><em>without the fog.</em></h2><p>LPM uses readable recipes for sources, dependencies, and build steps, so the path from source to installed package stays visible.</p><div class="package-signature"><span>RECIPE</span><strong>.l1pm</strong><span>RESULT</span><strong>tracked install</strong></div></div>
-        <div class="terminal" role="region" aria-label="Illustrative LPM build plan"><div class="terminal-bar"><span>EXAMPLE / LPM PLAN</span><span>LLVM.l1pm</span></div><pre><span class="prompt">l1 ~ $</span> lpm plan LLVM.l1pm --repo recipes
+        <div class="terminal depth-panel" role="region" aria-label="Illustrative LPM build plan"><div class="terminal-bar"><span>EXAMPLE / LPM PLAN</span><span>LLVM.l1pm</span></div><pre><span class="prompt">l1 ~ $</span> lpm plan LLVM.l1pm --repo recipes
 
 <span class="muted">[lpm]</span> reading recipe: LLVM.l1pm
 <span class="muted">[lpm]</span> resolving dependencies
@@ -133,13 +149,28 @@
 <span class="prompt">✓</span> build plan ready<span class="cursor-block" aria-hidden="true"></span></pre><div class="terminal-note"><span>ILLUSTRATIVE SESSION</span><span>PLAN ONLY / NO INSTALL</span></div></div>
       </div>
       <div class="lpm-flow-head"><h3>From recipe to recorded files.</h3><span>FOUR STAGES / ONE BUILD PATH</span></div>
-      <ol class="lpm-flow"><li><span>01 / READ</span><h4>Read</h4><p>Load a .l1pm recipe and its dependencies.</p></li><li><span>02 / VERIFY</span><h4>Verify</h4><p>Check source hashes or a pinned commit.</p></li><li><span>03 / BUILD</span><h4>Build</h4><p>Run the recipe steps in a prepared work area.</p></li><li><span>04 / RECORD</span><h4>Record</h4><p>Install files and track the package.</p></li></ol>
+      <ol class="lpm-flow"><li><span>01 / READ</span><h4><button type="button" data-lpm-step="0" aria-pressed="true" aria-controls="lpm-explanation">Read <span aria-hidden="true">↗</span></button></h4><p>Load a .l1pm recipe and its dependencies.</p></li><li><span>02 / VERIFY</span><h4><button type="button" data-lpm-step="1" aria-pressed="false" aria-controls="lpm-explanation">Verify <span aria-hidden="true">↗</span></button></h4><p>Check source hashes or a pinned commit.</p></li><li><span>03 / BUILD</span><h4><button type="button" data-lpm-step="2" aria-pressed="false" aria-controls="lpm-explanation">Build <span aria-hidden="true">↗</span></button></h4><p>Run the recipe steps in a prepared work area.</p></li><li><span>04 / RECORD</span><h4><button type="button" data-lpm-step="3" aria-pressed="false" aria-controls="lpm-explanation">Record <span aria-hidden="true">↗</span></button></h4><p>Install files and track the package.</p></li></ol>
+      <div class="lpm-explanation" id="lpm-explanation" aria-live="polite">
+        <div><span class="tool-label">ILLUSTRATIVE WALKTHROUGH / 01</span><h4>Start with a readable recipe.</h4><p>A .l1pm recipe describes the package source, dependencies, and build steps. Planning exposes those dependencies before the build starts.</p></div>
+        <pre>recipe → source location
+       → dependencies
+       → build steps</pre>
+      </div>
+      <div class="copy-command"><code>lpm plan LLVM.l1pm --repo recipes</code><button type="button" id="copy-plan">Copy command</button><span id="copy-status" role="status"></span></div>
     </section>
 
     <section class="status-section section-pad" id="status">
       <div class="section-kicker"><span>/ 06</span> MISSION LOG</div>
       <div class="status-grid"><div><span class="status-pill"><i class="live-dot"></i> ACTIVE DEVELOPMENT</span><h2>Built in the open.<br><em>Still taking shape.</em></h2></div><div class="status-intro"><p>The boot core, s6 setup, and LPM are the foundation. RT_HDK and the storage profiles above are release goals. Public download details will appear when the image is ready.</p><span class="status-release">PUBLIC DOWNLOAD / NOT YET AVAILABLE</span></div></div>
       <div class="status-facts"><div><span>01 / TESTED IN DEVELOPMENT</span><h3>Booted in QEMU</h3><p>x86_64 UEFI installation and i686 BIOS installation have booted in QEMU with 256 MiB RAM and a 512 MiB disk.</p></div><div><span>02 / STILL TO BUILD</span><h3>Release goals</h3><p>Public release images, the 300 MB standard profile, the 8 GB netinstall profile, and RT_HDK driver compilation.</p></div></div>
+      <div class="faq"><div class="tool-heading"><span>BEFORE YOU TRY IT</span><h3>A few practical answers.</h3></div>
+        <details><summary>Does a 70 MB ISO mean a 70 MB installation?</summary><p>No. The ISO is the boot image. Installed files, package sources, build tools, temporary build files, and your own data need additional disk space. The standard and netinstall figures describe separate storage targets.</p></details>
+        <details><summary>Can I compile packages with 256 MiB of RAM?</summary><p>256 MiB is the boot figure shown for development testing. It is not a general compilation requirement. Memory and temporary disk use depend on the package and the number of parallel build jobs; larger packages need more resources.</p></details>
+        <details><summary>Which image should I choose for an older PC?</summary><p>The architecture targets are i686 for 32-bit x86 and x86_64 for 64-bit x86. BIOS and UEFI describe the boot firmware, so check the processor architecture and firmware separately. ARM is not among the listed targets.</p></details>
+        <details><summary>What does “no GNU” cover?</summary><p>The target image excludes GNU runtime components. L1’s described base uses musl for the C library and dash for the shell. GNU tools may still be used on the host machine to build L1.</p></details>
+        <details><summary>Will RT_HDK build missing drivers today?</summary><p>RT_HDK is a planned feature. The current image reports unsupported hardware; automatic compilation of missing drivers is still a release goal.</p></details>
+        <details><summary>Where can I get an ISO or follow releases?</summary><p>A public download is not yet listed on this site. Follow development in the <a href="https://t.me/+3dqUpvBmXSI5ZDJl" target="_blank" rel="noopener noreferrer">L1 Telegram group ↗</a> for release announcements and testing updates.</p></details>
+      </div>
       <div class="status-join"><div><span>FOLLOW THE BUILD</span><strong>See L1 take shape.</strong></div><a href="https://t.me/+3dqUpvBmXSI5ZDJl" target="_blank" rel="noopener noreferrer">Join the Telegram group <span aria-hidden="true">↗</span></a></div>
     </section>
   </main>

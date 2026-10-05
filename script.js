@@ -84,8 +84,8 @@ if (mapStage) {
     const rect = mapStage.getBoundingClientRect();
     const x = Math.max(-1, Math.min(1, (pointerX - rect.left - rect.width / 2) / (rect.width / 2)));
     const y = Math.max(-1, Math.min(1, (pointerY - rect.top - rect.height / 2) / (rect.height / 2)));
-    mapStage.style.setProperty('--map-rx', `${(-y * 3).toFixed(2)}deg`);
-    mapStage.style.setProperty('--map-ry', `${(x * 3).toFixed(2)}deg`);
+    mapStage.style.setProperty('--map-rx', `${(-y * 7).toFixed(2)}deg`);
+    mapStage.style.setProperty('--map-ry', `${(x * 7).toFixed(2)}deg`);
   }
 
   function resetMapTilt() {
@@ -121,6 +121,17 @@ if (bootExperience) {
   const clamp = value => Math.max(0, Math.min(1, value));
   let frameRequested = false;
   let staticScene = false;
+  let sceneInitialized = false;
+  let inspectedLayer = null;
+  const inspectButtons = bootExperience.querySelectorAll('[data-inspect]');
+  inspectButtons.forEach(button => button.addEventListener('click', () => {
+    inspectedLayer = button.dataset.inspect === 'auto' ? null : Number(button.dataset.inspect);
+    inspectButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    document.getElementById('inspect-note').textContent = inspectedLayer === null
+      ? 'Automatic view restored. Scroll through the boot path on larger screens.'
+      : `Inspecting ${names[inspectedLayer]}. Select Automatic view to resume the scroll sequence.`;
+    requestBootUpdate();
+  }));
 
   function setActiveLayer(index) {
     steps.forEach((step, stepIndex) => {
@@ -139,18 +150,35 @@ if (bootExperience) {
   function updateBootScene() {
     frameRequested = false;
 
+    if (inspectedLayer !== null) {
+      layers.forEach((layer, index) => {
+        layer.style.setProperty('--depth', `${index * 36}px`);
+        layer.style.setProperty('--offset', `${(index - 2) * 9}px`);
+        layer.style.opacity = index <= inspectedLayer ? '1' : '0';
+        layer.style.visibility = index <= inspectedLayer ? 'visible' : 'hidden';
+      });
+      object.style.setProperty('--scene-rotation', '0deg');
+      stage.style.setProperty('--boot-progress', `${(inspectedLayer + 1) * 20}%`);
+      setActiveLayer(inspectedLayer);
+      staticScene = false;
+      sceneInitialized = true;
+      return;
+    }
+
     if (reducedMotion.matches || compactLayout.matches) {
       if (!staticScene) {
         layers.forEach((layer, index) => {
           layer.style.setProperty('--depth', `${index * 36}px`);
           layer.style.setProperty('--offset', `${(index - 2) * 9}px`);
           layer.style.opacity = '1';
+          layer.style.visibility = 'visible';
         });
         object.style.setProperty('--scene-rotation', '0deg');
         stage.style.setProperty('--boot-progress', '100%');
         setActiveLayer(4);
         staticScene = true;
       }
+      sceneInitialized = true;
       return;
     }
 
@@ -174,20 +202,23 @@ if (bootExperience) {
     });
 
     layers.forEach((layer, index) => {
-      const reveal = clamp(progress * (layers.length - 1) + 1.05 - index);
-      const depth = index * 36 - (1 - reveal) * 125;
-      const offset = (index - 2) * 9 + (1 - reveal) * (index % 2 ? 62 : -62);
+      const visible = index <= activeIndex;
+      const depth = visible ? index * 36 : -125;
+      const offset = (index - 2) * 9 + (visible ? 0 : index % 2 ? 62 : -62);
       layer.style.setProperty('--depth', `${depth.toFixed(1)}px`);
       layer.style.setProperty('--offset', `${offset.toFixed(1)}px`);
-      layer.style.opacity = (0.12 + reveal * 0.88).toFixed(2);
+      layer.style.opacity = visible ? '1' : '0';
+      layer.style.visibility = visible ? 'visible' : 'hidden';
     });
-    object.style.setProperty('--scene-rotation', `${(-3 + progress * 6).toFixed(2)}deg`);
+    object.style.setProperty('--scene-rotation', `${(-8 + progress * 16).toFixed(2)}deg`);
     stage.style.setProperty('--boot-progress', `${(20 + progress * 80).toFixed(1)}%`);
     setActiveLayer(activeIndex);
+    sceneInitialized = true;
   }
 
   function requestBootUpdate() {
     if (frameRequested) return;
+    if (sceneInitialized) bootExperience.classList.add('is-ready');
     frameRequested = true;
     window.requestAnimationFrame(updateBootScene);
   }
@@ -198,3 +229,105 @@ if (bootExperience) {
   compactLayout.addEventListener('change', requestBootUpdate);
   requestBootUpdate();
 }
+
+// Give the document's functional panels a small amount of inspectable depth.
+const depthPanels = document.querySelectorAll('.requirement, .profile, .hdk-steps > div, .terminal, .lpm-flow li, .status-facts > div');
+const canTiltPanels = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 761px) and (prefers-reduced-motion: no-preference)');
+
+depthPanels.forEach(panel => {
+  panel.classList.add('depth-panel');
+  let frame = 0;
+  let x = 0;
+  let y = 0;
+
+  panel.addEventListener('pointermove', event => {
+    if (!canTiltPanels.matches) return;
+    const rect = panel.getBoundingClientRect();
+    x = Math.max(-.5, Math.min(.5, (event.clientX - rect.left) / rect.width - .5));
+    y = Math.max(-.5, Math.min(.5, (event.clientY - rect.top) / rect.height - .5));
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      panel.style.setProperty('--depth-rx', `${(-y * 7).toFixed(2)}deg`);
+      panel.style.setProperty('--depth-ry', `${(x * 7).toFixed(2)}deg`);
+    });
+  }, { passive: true });
+
+  panel.addEventListener('pointerleave', () => {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    panel.style.removeProperty('--depth-rx');
+    panel.style.removeProperty('--depth-ry');
+  });
+});
+
+canTiltPanels.addEventListener('change', () => {
+  depthPanels.forEach(panel => {
+    panel.style.removeProperty('--depth-rx');
+    panel.style.removeProperty('--depth-ry');
+  });
+});
+
+function evaluateHardware({ architecture, memory, storage, edition }) {
+  const minimumStorage = { current: 512, standard: 300, netinstall: 8000 }[edition];
+  const issues = [];
+  if (!['x86_64', 'i686'].includes(architecture)) issues.push('This architecture is outside the listed x86 targets.');
+  if (Number(memory) < 256) issues.push('Memory is below the 256 MiB development boot figure.');
+  if (Number(storage) < minimumStorage) issues.push(edition === 'current'
+    ? 'The current installer needs at least 512 MiB of disk space.'
+    : `This planned edition targets ${edition === 'standard' ? '300 MB' : '8 GB'} of disk space.`);
+  return {
+    heading: issues.length ? 'Below the listed requirements.' : edition === 'current' ? 'Meets the listed capacity figures.' : 'Meets the planned capacity target.',
+    messages: [...issues, edition === 'current'
+      ? 'Capacity alone does not confirm hardware compatibility. Check BIOS or UEFI boot support and device drivers.'
+      : 'This edition is planned. These targets do not describe an available release.',
+      'Source builds need additional memory and working space, depending on the package.'],
+    matches: issues.length === 0
+  };
+}
+
+const hardwareForm = document.getElementById('hardware-checker');
+function showHardwareResult() {
+  const result = evaluateHardware(Object.fromEntries(new FormData(hardwareForm)));
+  const output = document.getElementById('hardware-result');
+  output.replaceChildren();
+  output.dataset.matches = String(result.matches);
+  const heading = document.createElement('strong');
+  heading.textContent = result.heading;
+  output.append(heading);
+  result.messages.forEach(message => {
+    const paragraph = document.createElement('p');
+    paragraph.textContent = message;
+    output.append(paragraph);
+  });
+}
+hardwareForm.addEventListener('submit', event => { event.preventDefault(); showHardwareResult(); });
+hardwareForm.addEventListener('change', showHardwareResult);
+
+const lpmWalkthrough = [
+  ['Start with a readable recipe.', 'A .l1pm recipe describes the package source, dependencies, and build steps. Planning exposes those dependencies before the build starts.', 'recipe → source location\n       → dependencies\n       → build steps'],
+  ['Know which source you are building.', 'The verification stage checks the source against the recipe’s hash or pinned commit. A mismatch should be resolved before moving on to compilation.', 'expected source identity\n          ↓\ncompare with fetched source\n          ↓\ncontinue only after verification'],
+  ['Turn source into a package.', 'The build stage runs the recipe steps in a prepared work area. Dependencies and a suitable toolchain must be available. Build time, RAM use, and temporary storage vary by package.', 'verified source + dependencies\n          ↓\nconfigure → compile → stage files'],
+  ['Keep track of installed files.', 'The final stage installs the package and records its files. That record connects the installed result with the package that produced it.', 'staged package files\n          ↓\ninstallation + package record']
+];
+const lpmButtons = document.querySelectorAll('[data-lpm-step]');
+lpmButtons.forEach(button => button.addEventListener('click', () => {
+  const index = Number(button.dataset.lpmStep);
+  const [title, description, diagram] = lpmWalkthrough[index];
+  const panel = document.getElementById('lpm-explanation');
+  lpmButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+  panel.querySelector('.tool-label').textContent = `ILLUSTRATIVE WALKTHROUGH / 0${index + 1}`;
+  panel.querySelector('h4').textContent = title;
+  panel.querySelector('p').textContent = description;
+  panel.querySelector('pre').textContent = diagram;
+}));
+
+document.getElementById('copy-plan').addEventListener('click', async () => {
+  const status = document.getElementById('copy-status');
+  try {
+    await navigator.clipboard.writeText('lpm plan LLVM.l1pm --repo recipes');
+    status.textContent = 'Command copied.';
+  } catch {
+    status.textContent = 'Select the command text to copy it manually.';
+  }
+});
